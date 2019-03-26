@@ -2,13 +2,22 @@
 
 import sys
 ARGUMENTS = sys.argv
-OPTION = ARGUMENTS[1]
-KEY = ARGUMENTS[2]
+#verify inputs exists
+try:
+    OPTION = ARGUMENTS[1]
+    KEY = ARGUMENTS[2]
+except IndexError:
+    print "usage: \n" + sys.argv[0] + " -e|-d key"
+    exit()
 
+#Returns an array to be looped over to shift the input_data
 def keySetup(key, options):
+    #remove white space from key and make lower case
     key = "".join(key.lower().split())
     keyarray = []
     for letter in key:
+        #each letter of the key shifts differently depending
+        #on whether we are encoding or decoding
         if (options == "-e"):
             keyarray.append(ord(letter) - 97)
         elif (options == "-d"):
@@ -18,25 +27,32 @@ def keySetup(key, options):
         	sys.exit()
     return keyarray
 
+#takes a string to enclode/decode as input along with an int
+#array to shift the text
 def encode(sometext, key):
     encoded = ""
     index = 0
     for character in sometext:
+        #characters are shifted differently based on whether they are
+        #upper or lower case
         if character.isalpha():
             if character.isupper():
                 base = 65
             else:
                 base = 97
+            #calculate the int value of the new character
             charnum = ((ord(character) - base + key[index%len(key)])%26) + base
             newcharacter = chr(charnum)
             index = index + 1
         else:
+            #dont encode non alpha characters
             newcharacter = character
         encoded = encoded + newcharacter
     print encoded
 
+#infinite loop over input
 while(1):
-	INPUT_STR = sys.stdin.readline().strip()
+	INPUT_STR = sys.stdin.readline().rstrip("\n")
 	if (INPUT_STR == ""):
 		break
 	encoded_key = keySetup(str(KEY), OPTION)
