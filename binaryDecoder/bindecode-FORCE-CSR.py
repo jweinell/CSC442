@@ -19,12 +19,22 @@ def decode_to_ascii(binstr):
     output = []
     flag = 0
     force_both = False
+
+    # if the binary is divisible by 7 and 8, no easy way to tell which is needed
+    # so we'll just do both
+    if (len(binstr)%7 == 0 and len(binstr)%8 == 0):
+        flag = 7
+        force_both = True
+        output2 = []
+        binstr2 = binstr # create a copy for using
+    # if we can tell it's just 7
     if len(binstr)%7 == 0:
         flag = 7
+    # or just 8
     elif len(binstr)%8 == 0:
         flag = 8
+    # otherwise we can't tell which it is (a mix of 7 with 8-bit backspaces)
     else:
-        # in this case just force both
         flag = 7
         force_both = True
         output2 = []
@@ -48,7 +58,7 @@ def decode_to_ascii(binstr):
             output.append(current) # add to output list
             binstr = binstr[flag:] # remove that character from the string we are iterating over
 
-    # runs only if not a normal-case
+    # runs only if needing to do both
     if force_both:
         flag = 8
         # perform the actual decoding
