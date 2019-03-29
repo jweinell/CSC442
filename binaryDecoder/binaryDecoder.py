@@ -1,12 +1,16 @@
 #!/usr/bin/python
-# written by Christopher Rice
+# Github for Team: https://github.com/jweinell/CSC442/
+# It's a private repository, FYI -- jweinell can grant you access
+
+# written by Christopher Rice, based on John Weinell's code
 
 # edited version to force a 7-style and 8-style attempt
-# which could be an issue if ASCII w/ backspaces isn't evenly divisible
-# in length by 7 or 8
+# if output is not detected as one or the other
 
 # this is kind of a brute-force attempt and not really pretty, but could prove useful
-# since his tricky.txt example just happened to work
+# even allows for 7-bit mixed with 8-bit-encoded backspaces if needed
+
+# can be run by running the code then pasting in binary or by giving a file to stdin
 
 import sys
 
