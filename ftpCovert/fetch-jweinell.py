@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from ftplib import FTP
+from StringIO import StringIO
 import sys
 import re
 
@@ -8,17 +9,19 @@ import re
 METHOD = 7
 
 #define source variables
-host = ''
+host = '127.0.0.1'
 path = '/'
 username = ''
 password = ''
+source = (host,path,username,password)
 
+def fetchBinaryStr(source, method):
+    (host, path, username, password) = source
 
-def fetchBinaryStr(host, path, username, password, method):
     #change std out and save original
     original_stdout = sys.stdout
     unused = StringIO()
-    sys.stdout = result
+    sys.stdout = unused
 
     #login and set path on ftp server
     ftp = FTP(host)
@@ -27,12 +30,36 @@ def fetchBinaryStr(host, path, username, password, method):
 
     #change output to store in files string
     files_str = StringIO()
-    sys.stdout = files
-    files = ftp.dir()
+    sys.stdout = files_str
+    ftp.dir()
     sys.stdout = unused
 
     #split output string
-    files = files.getvalue().split('\n')
+    files = files_str.getvalue().split('\n')
+
+    #Parse permission segment out of files list
+    permissions = re.compile(r'([a-z\-]+)')
+    binary_list = []
+    for file in files:
+        permission_array = []
+        try:
+            permission_match = permissions.search(file).group(0)
+        except AttributeError as e:
+            permission_match = ''
+        for character in permission_match:
+            if character == '-':
+                permission_array.append('0')
+            else:
+                permission_array.append('1')
+        permission_binary = "".join(permission_array)
+        binary_list.append(permission_binary)
+
+    binary_str = "".join(binary_list)
+
+    #Set stdout back to oringal
+    sys.stdout = original_stdout
+
+    return binary_str
 
 
 def decode_ascii(binstr, bits):
@@ -49,3 +76,6 @@ def decode_ascii(binstr, bits):
         binstr = binstr[bits:]
     decoded = "".join(chrarray)
     return decoded
+
+
+print decode_ascii(fetchBinaryStr(source,METHOD),7)
