@@ -1,24 +1,36 @@
 #!/usr/bin/python
 
-from ftplib import FTP
+from ftplib import FTP, error_perm
 from StringIO import StringIO
+import argparse
+import socket
 import sys
 import re
 
-#Try and pull path as an argument
-try:
-    path = sys.argv[1]
-except:
-    path = '/'
 
 #define source variables
 host = '127.0.0.1'
-port = 21
+port = '21'
 username = ''
 password = ''
+path = '/'
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--host", help="Destination Host")
+parser.add_argument("--port", help="Destination port")
+parser.add_argument("--path", help="Starting Path")
+parser.add_argument("-u","--user", help="Username")
+parser.add_argument("-p","--password", help="Password")
+args = parser.parse_args()
+
+#print args
+
+if args.host: host = args.host
+if args.port: port = args.port
+if args.path: path = args.path
+if args.user: user = args.user
+if args.password: password = args.password
 source = (host,port,path,username,password)
-
-
 
 
 #Method for retrieving a binary string from file permissions
@@ -31,15 +43,26 @@ def fetchBinaryStr(source, method, hidden=False, filter=False):
     #change std out and save original
     original_stdout = sys.stdout
     unused = StringIO()
-    sys.stdout = unused
+    #sys.stdout = unused
 
     #login and set path on ftp server
-    ftp = FTP(host)
+    ftp = FTP()
+    #ftp.connect(host=host, port=port, timeout = 5)
     try:
-        ftp.connect(host=host, port=port, timeout=5)
-    except:
+        ftp.connect(host=host, port=port, timeout = 5)
+    except socket.timeout as e:
+        print 'Connection has timed out'
         exit()
-    ftp.login(username,password)
+    except socket.error as e:
+        print e
+        exit()
+
+    try:
+        ftp.login(username,password)
+    except error_perm as e:
+        print e
+        exit()
+
     ftp.cwd(path)
 
     #change output to store in files string
@@ -52,7 +75,6 @@ def fetchBinaryStr(source, method, hidden=False, filter=False):
 
     #Set stdout back to oringal
     sys.stdout = original_stdout
-
     #split output string
     files = files_str.getvalue().split('\n')
 
@@ -129,6 +151,8 @@ def challengeMethod(source):
         print ''
 
 challengeMethod(source)
+
+#fetchBinaryStr(source,10)
 
 #Fetch the binary string and normalize it for decoding
 #binary_str = normalizeBinary(fetchBinaryStr(source,METHOD),7)
