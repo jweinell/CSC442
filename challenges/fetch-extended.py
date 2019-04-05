@@ -13,9 +13,10 @@ except:
 
 #define source variables
 host = '127.0.0.1'
+port = 21
 username = ''
 password = ''
-source = (host,path,username,password)
+source = (host,port,path,username,password)
 
 
 
@@ -25,7 +26,7 @@ source = (host,path,username,password)
 #Source parameter is a tuple with host, path, username, and password
 #Method represents the number of bits of the permissions to be used
 def fetchBinaryStr(source, method, hidden=False, filter=False):
-    (host, path, username, password) = source
+    (host, port, path, username, password) = source
 
     #change std out and save original
     original_stdout = sys.stdout
@@ -34,6 +35,10 @@ def fetchBinaryStr(source, method, hidden=False, filter=False):
 
     #login and set path on ftp server
     ftp = FTP(host)
+    try:
+        ftp.connect(host=host, port=port, timeout=5)
+    except:
+        exit()
     ftp.login(username,password)
     ftp.cwd(path)
 
