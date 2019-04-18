@@ -1,0 +1,71 @@
+#!/usr/bin/python
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("SOURCE", help="String to be decoded")
+parser.add_argument("-v","--vigenere",metavar='KEY', help="Decode with vigenere cipher")
+parser.add_argument("-b","--binary",metavar='BITS', type=int, help="Decode binary string")
+parser.add_argument("-f",action="store_true" ,help="Source file location")
+args = parser.parse_args()
+
+def decode_ascii(binstr, bits):
+    modification = bits - len(binstr)%bits
+    index = 0
+    mod_list = []
+    while index < modification:
+        binstr = binstr + '0'
+        index = index + 1
+    chrarray = []
+    while len(binstr) > 0:
+        chrnum = int(binstr[:bits],2)
+        if chrnum != 8:
+            chrarray.append(chr(chrnum))
+        else:
+            if len(chrarray) > 0:
+                chrarray = chrarray[:-1]
+        binstr = binstr[bits:]
+    decoded = "".join(chrarray)
+    return decoded
+
+def decode_vigenere(sometext, key):
+    key = "".join(key.lower().split())
+    keyarray = []
+    for letter in key:
+        keyarray.append(26 - (ord(letter) - 97))
+    key = keyarray
+    encoded = ""
+    index = 0
+    for character in sometext:
+        # characters are shifted differently based on whether they are
+        # upper or lower case
+        if character.isalpha():
+            if character.isupper():
+                base = 65
+            else:
+                base = 97
+            # calculate the int value of the new character
+            charnum = ((ord(character) - base + key[index%len(key)])%26) + base
+            newcharacter = chr(charnum)
+            index = index + 1
+        else:
+            # don't encode non alpha characters
+            newcharacter = character
+        encoded = encoded + newcharacter
+    return encoded
+
+if args.binary:
+    bits = args.binary
+    if not args.f:
+        print decode_ascii(args.SOURCE, bits)
+    else:
+        fh = open(args.SOURCE, 'r')
+        for line in fh.readlines():
+            print decode_ascii(line, bits)
+elif args.vigenere:
+    key = args.vigenere
+    if not args.f:
+        key = args.vigenere
+        print decode_vigenere(args.SOURCE, key)
+    else:
+        pass
