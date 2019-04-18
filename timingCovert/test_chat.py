@@ -3,10 +3,12 @@
 import socket
 import sys
 import time
+import re
 conn = ('jeangourd.com',31337)
 times = []
 LOWER = 0
-HIGHER = 1
+HIGHER = 0.1
+ASCII_TYPE = 8
 
 def getTimes(connection):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -19,6 +21,8 @@ def getTimes(connection):
         sequence.append([None] * (len(data) - 1))
     while (data.rstrip('\n')!= 'EOF'):
         data = s.recv(4096)
+        if (data.rstrip('\n') == 'EOF'):
+        	break
         t1 = time.time()
         #print(t1 - t0)
         dif = t1-t0
@@ -32,8 +36,9 @@ def getTimes(connection):
 def getCovert(timearr, lower, higher):
 	binary = ""
 	for time in timearr:
-		diflower = abs(timearr[time] - lower)
-		difhigher = abs(timearr[time] - higher)
+		diflower = abs(time - lower)
+		difhigher = abs(time - higher)
+		# print str(diflower) + ", " + str(difhigher)
 		if (diflower < difhigher):
 			binary = binary + "0"
 		else:
@@ -41,8 +46,12 @@ def getCovert(timearr, lower, higher):
 	return binary
 
 def decode_ascii(binstr, bits):
-    if len(binstr)%bits != 0:
-        return None
+    modification = bits - len(binstr)%bits
+    index = 0
+    mod_list = []
+    while index < modification:
+        binstr = binstr + '0'
+        index = index + 1
     chrarray = []
     while len(binstr) > 0:
         chrnum = int(binstr[:bits],2)
@@ -56,5 +65,12 @@ def decode_ascii(binstr, bits):
     return decoded
 
 times = getTimes(conn)
-binstr = getCovert(times)
-decoded = decode_ascii(binstr,7)
+binstr = getCovert(times, LOWER, HIGHER)
+# print binstr
+decoded = decode_ascii(binstr,ASCII_TYPE)
+
+try:
+	covert = re.compile(r'(.*)EOF')
+	print covert.search(decoded).group(1)
+except AttributeError:
+	print decoded
