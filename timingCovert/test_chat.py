@@ -40,5 +40,21 @@ def getCovert(timearr, lower, higher):
 			binary = binary + "1"
 	return binary
 
-times = getTimes(conn)
+def decode_ascii(binstr, bits):
+    if len(binstr)%bits != 0:
+        return None
+    chrarray = []
+    while len(binstr) > 0:
+        chrnum = int(binstr[:bits],2)
+        if chrnum != 8:
+            chrarray.append(chr(chrnum))
+        else:
+            if len(chrarray) > 0:
+                chrarray = chrarray[:-1]
+        binstr = binstr[bits:]
+    decoded = "".join(chrarray)
+    return decoded
 
+times = getTimes(conn)
+binstr = getCovert(times)
+decoded = decode_ascii(binstr,7)
