@@ -10,8 +10,8 @@ import dateutil
 # datetimes should be stored as YYYY MM DD HH mm SS
 # temporary testing values
 # will later be taken in from stdin and etc.
-INPUT_EPOCH = "2014 12 31 00 00 00"
-CURRENT_TIME = "2015 01 01 00 01 30"
+INPUT_EPOCH = "1974 06 01 08 57 23"
+CURRENT_TIME = "2017 04 26 15 14 30"
 
 # turn the input into a valid datetime object
 epoch = INPUT_EPOCH.split()
