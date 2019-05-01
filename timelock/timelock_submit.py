@@ -4,13 +4,15 @@ import pytz
 import dateutil
 import sys
 
+# TIMELOCK Code: Group 1, Macedonians
+
 #### NOTE: THIS CODE REQUIRES PYTZ / DATEUTIL LIBRARY. MUST BE INSTALLED BEFORE RUNNING. ####
 #### pip install pytz ####
 #### pip install python-dateutil ####
+#### NOTE: Set to work based on a CST/CDT local clock.
 
 # datetimes should be stored as YYYY MM DD HH mm SS
-# temporary testing values
-# will later be taken in from stdin and etc.
+# "epoch" time is given through stdin
 INPUT_EPOCH = sys.stdin.readline().strip()
 
 # turn the input into a valid datetime object
@@ -23,27 +25,26 @@ epoch = datetime.datetime(int(epoch[0]),int(epoch[1]),int(epoch[2]),int(epoch[3]
 epoch = timezone.localize(epoch)
 epoch = epoch.astimezone(utc)
 epoch = epoch.replace(tzinfo=None)
+# current time is just whatever time it is now
 current = datetime.datetime.utcnow()
 
 # calculate the time difference between the epoch and the current time
 time_elapsed = (current - epoch).total_seconds()
-#print time_elapsed
 
 # we want hashes to be valid for 60 seconds, which means we can mod 60
 # and subtract those differences
 time_elapsed = time_elapsed - (time_elapsed % 60)
-#print time_elapsed
+
 time_elapsed_round = long(time_elapsed)
-#print time_elapsed_round
+
 # now based on THIS time difference, we perform the double MD5 hashing.
 hashed = hashlib.md5(hashlib.md5(str(time_elapsed_round)).hexdigest()).hexdigest()
-#print hashed
 
 # now we need to convert this into our specific key
 output = ""
 counter_af = 0
 counter_09 = 0
-# grav the first two characters
+# grab the first two characters
 for item in hashed:
 	if counter_af >= 2:
 		break

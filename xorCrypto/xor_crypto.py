@@ -36,11 +36,11 @@ def XOR():
 	key_bin = ""
 	input_bin = ""
 	# turn the key/input into a binary string that we can perform actions on
-	# REMINDER: THIS IS IN SEVEN-BIT ASCII
+	# REMINDER: THIS IS IN EIGHT-BIT ASCII
 	for item in range(0, len(key) - 1):
-		key_bin += str(bin(ord(key[item]))[2:])
+		key_bin += str(bin(ord(key[item]))[2:]).zfill(8)
 	for item in range(0, len(input_text) - 1):
-		input_bin += str(bin(ord(input_text[item]))[2:])
+		input_bin += str(bin(ord(input_text[item]))[2:]).zfill(8)
 
 	if (DEBUG):
 		print "key converted to binary: {}".format(key_bin)
@@ -48,13 +48,13 @@ def XOR():
 
 	# now we can generate our encoded output based on the key
 	output_str = str(bin(int(key_bin, 2) ^ int(input_bin, 2))[2:])
-	output_str = output_str[2:].zfill(len(key_bin))
+	output_str = output_str[2:]
 
 	if (DEBUG):
 		print "output str pre-ascii-reconversion: {}".format(output_str)
 
 	# convert this back to ASCII
-	ascii_output = decode_ascii(output_str, 7)
+	ascii_output = decode_ascii(output_str, 8)
 	sys.stdout.write(ascii_output)
 		
 
