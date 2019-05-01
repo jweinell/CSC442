@@ -1,0 +1,23 @@
+#!/usr/bin/python
+
+fhCipher = open('myout.txt','rb')
+fhKey = open('key','rb')
+
+dataCipher = fhCipher.read()
+dataKey = fhKey.read()
+
+length = len(dataKey)
+
+i = 0
+output = ''
+
+print dataCipher[0]
+
+while i < length:
+    output = output + chr(ord(dataCipher[i]) ^ ord(dataKey[i]))
+    i = i + 1
+
+fho = open('myout.txt','wb')
+
+fho.write(output)
+fho.close()
