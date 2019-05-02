@@ -95,12 +95,14 @@ def bitStore(data,offset,output,ending,hidden):
         position = 7
         charnum = ord(character)
         while position >= 0:
-            bit = (charnum<<position)%2
+            bit = (charnum>>position)%2
             datanum = ord(datalist[i])
             if datanum%2 == bit:
                 pass
             else:
                 if datanum%2 == 0:
+                    #print datanum
+                    #exit()
                     datalist[i] = chr(datanum + 1)
                 elif datanum%2 == 1:
                     datalist[i] = chr(datanum - 1)
@@ -127,6 +129,10 @@ def byteStore(data, offset, output, ending, interval, hidden):
         i += interval
     data = ''.join(datalist)
     output.write(data)
+
+
+
+
 
 if retrieve and not store:
     if method == 'bit':
