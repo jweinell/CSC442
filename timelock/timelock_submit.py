@@ -59,4 +59,6 @@ for item in hashed_rev:
 	elif item.isdigit() == True:
 		output += item
 		counter_09 += 1
+# add extra bit
+output += hashed_rev[0]
 print output
